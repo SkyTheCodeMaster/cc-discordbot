@@ -28,7 +28,7 @@ local identifier = {
 local socket,err = http.websocket(url .. "/?v=8&encoding=json",{["Authorization"] = "Bot " .. token,["Content-Type"] = "application/json"})
 if not socket then error(err) end
 -- Send the identifier to Discord.
-socket.send(identifier)
+socket.send(textutils.serializeJSON(identifier))
 
 --- Posts a message to the channel ID.
 -- @tparam number channel Channel ID to post to.
