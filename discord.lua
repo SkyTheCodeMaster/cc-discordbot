@@ -16,17 +16,33 @@ local shards = data.shards
 local url = data.url
 local sessionStartLimit = data["session_start_limit"]
 
-local socket,err = http.websocket(url)
+-- Prepare the identifier
+local identifier = {
+  ["op"] = 2,
+  ["d"] = {
+    ["token"] = "Bot " .. token,
+    ["intents"] = 512,
+  },
+}
+-- Connect to the socket.
+local socket,err = http.websocket(url .. "/?v=8&encoding=json",{["Authorization"] = "Bot " .. token,["Content-Type"] = "application/json"})
 if not socket then error(err) end
+-- Send the identifier to Discord.
+socket.send(identifier)
 
 --- Posts a message to the channel ID.
 -- @tparam number channel Channel ID to post to.
 -- @tparam string message Message to post into the channel.
 local function postMessage(channel,msg)
-  local headers = {
-    ["content"] = msg
+  local body = {
+    ["content"] = msg,
+    ["tts"] = false,
   }
-  http.post("https://discord.com/api/v8/channels/"..tostring(channel) .."/messages"
+  local headers = {
+    ["Authorization"] = "Bot " .. token,
+    ["Content-Type"] = "application/json",
+  }
+  http.post("https://discord.com/api/v8/channels/"..tostring(channel) .."/messages/?v=8&encoding=json",body,headers)
 end
   
 return {
